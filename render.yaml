@@ -1,10 +1,9 @@
 services:
   - type: web
     name: zakovat-bot
-    env: php
+    env: docker
     plan: free
-    buildCommand: "composer install"
-    startCommand: "php -S 0.0.0.0:10000 -t public"
+    dockerfilePath: Dockerfile
     envVars:
       - key: BOT_TOKEN
         value: "7951133862:AAE6TuCJ3vSRJ_RxCxQ8Miad-77y5v89m9wAd"
