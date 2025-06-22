@@ -1,21 +1,30 @@
 FROM php:8.1-apache
 
-# PHP kengaytmalarini o‘rnatish
-RUN docker-php-ext-install pdo pdo_mysql
+# 🔧 Zaruriy paketlar: unzip, zip, git, libzip
+RUN apt-get update && apt-get install -y \
+    unzip \
+    git \
+    zip \
+    libzip-dev \
+    && docker-php-ext-install zip pdo pdo_mysql
 
-# Composerni o‘rnatish
+# ✅ Composer o‘rnatish
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Apache rootni o‘zgartirish
+# 📁 Apache root-ni public papkaga sozlash
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 
-# Loyihani ichkariga nusxalash
+# 📦 Loyihani ichkariga nusxalash
 COPY . /var/www/html
 
-# Composer install
 WORKDIR /var/www/html
-RUN composer install
 
+# 📦 Composer install — pluginlarsiz xavfsiz usulda
+RUN composer install --no-interaction --no-plugins --no-scripts
+
+# 🌐 Port ochish
 EXPOSE 80
+
+# 🚀 Apache ishga tushirish
 CMD ["apache2-foreground"]
